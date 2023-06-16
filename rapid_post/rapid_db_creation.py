@@ -30,12 +30,26 @@ class RapidDB:
         payload_values = []
         for keys, values in payload.items():
             payload_keys.append(keys)
+            type_mapping = {
+                str: "VARCHAR(255)",
+                int: "INTEGER",
+                float: "FLOAT",
+                bool: "BOOLEAN",
+            }
             if isinstance(values, (str, float, int, bool)):
-                type_dict = {"value": values, "type": type(values).__name__}
+                type_dict = {"value": values, "type": type_mapping[type(values)]}
                 payload_values.append(type_dict)
-        print(payload_values, "::payload values")
+        create_table_query = f"CREATE TABLE TEST ("
+        for column, datatype in zip(payload_keys, payload_values):
+            data_type = datatype["type"]
+            create_table_query += f"{column} {data_type},"
+        create_table_query = create_table_query.rstrip(", ")
+        create_table_query += ")"
+        return create_table_query
 
     def _rapid_db_create(self):
         """functionality to create the database based on the Payload data"""
         conn = self.rapid_db_connect
+        db_query = self._rapid_payload_analyzer()
+        print(db_query, ":::db query")
         cursor = conn.cursor()
