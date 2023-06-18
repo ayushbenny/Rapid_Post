@@ -1,5 +1,4 @@
 import requests
-
 from rapid_db_creation import RapidDB
 
 
@@ -15,7 +14,7 @@ class RapidPost:
     def _rapid_post_request(self):
         """functionality to create the post request with the corresponding url and the payload"""
         if self.auto_rapid_db == True and isinstance(self.payload, dict):
-            rapid_db_instance = RapidDB(db_credentials=self.payload)._rapid_db_create()
+            rapid_db_instance = RapidDB(db_credentials=self.payload)
         if isinstance(self.payload, dict):
             response = requests.post(self.url, json=self.payload)
             return response.text

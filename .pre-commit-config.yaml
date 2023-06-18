@@ -1,0 +1,55 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.4
+    hooks:
+      - id: codespell
+
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v3.9.0
+    hooks:
+      - id: reorder-python-imports
+        args:
+          - --py37-plus
+
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    rev: v0.0.260
+    hooks:
+      - id: ruff
+        args: ["--line-length=130"]
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+      - id: pyupgrade
+        args:
+          - --py37-plus
+
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.4.0
+    hooks:
+      - id: add-trailing-comma
+        args:
+          - --py36-plus
+
+  - repo: https://github.com/psf/black
+    rev: "23.3.0"
+    hooks:
+      - id: black
+        args: ["--line-length=130"]
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.12.2
+    hooks:
+      - id: validate-pyproject
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.12.2
+    hooks:
+      - id: validate-pyproject
