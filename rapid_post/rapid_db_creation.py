@@ -3,7 +3,24 @@ import psycopg2
 
 
 class RapidDB:
+    """
+    A class for handling database operations using RapidDB.
+
+    Args:
+        db_credentials (dict): A dictionary containing the database connection credentials.
+
+    Attributes:
+        db_credentials (dict): The database connection credentials.
+        rapid_db_connect (RapidDBConnect): An instance of the RapidDBConnect class for database connection.
+    """
+
     def __init__(self, db_credentials) -> None:
+        """
+        Initializes a RapidDB object.
+
+        Args:
+            db_credentials (dict): A dictionary containing the database connection credentials.
+        """
         self.db_credentials = db_credentials
         self.rapid_db_connect = self._rapid_db_connect
         create_query = self._rapid_payload_analyzer()
@@ -12,7 +29,15 @@ class RapidDB:
 
     @property
     def _rapid_db_connect(self):
-        """functionality to create the connection to the Postgres Database"""
+        """
+        Creates a connection to the Postgres Database.
+
+        Returns:
+            psycopg2.extensions.connection: The database connection object.
+
+        Raises:
+            Exception: If an error occurs while connecting to the database.
+        """
         try:
             rapid_connect = psycopg2.connect(
                 database="rapid_db",
@@ -26,7 +51,19 @@ class RapidDB:
         return rapid_connect
 
     def _rapid_payload_analyzer(self):
-        """functioanlity to analyze the payload and extract the data to create the database"""
+        """
+        Analyzes the payload and extracts the data to create the database table.
+
+        Returns:
+            str: The create table query generated from the payload.
+
+        Note:
+            The payload should be a dictionary where the keys represent the column names
+            and the values represent the corresponding data types.
+
+        Raises:
+            None.
+        """
         payload = self.db_credentials
         payload_keys = []
         payload_values = []
@@ -48,13 +85,27 @@ class RapidDB:
             else "CREATE TABLE TEST (id INTEGER PRIMARY KEY,"
         )
         create_table_query += ", ".join(
-            [f"{column} {datatype['type']}" for column, datatype in zip(payload_keys, payload_values)],
+            [
+                f"{column} {datatype['type']}"
+                for column, datatype in zip(payload_keys, payload_values)
+            ],
         )
         create_table_query += ")"
         return create_table_query
 
     def _rapid_db_create(self, query):
-        """functionality to create the database based on the Payload data"""
+        """
+        Executes the query to create the database table based on the payload data.
+
+        Args:
+            query (str): The SQL query to create the table.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
         conn = self.rapid_db_connect
         cursor = conn.cursor()
         try:
@@ -65,7 +116,15 @@ class RapidDB:
             print("Failed to create Table > ", str(error))
 
     def _rapid_db_insert(self):
-        """functionality to insert data into the table that has been created in the _rapid_db_create function"""
+        """
+        Inserts data into the table that has been created in the `_rapid_db_create` function.
+
+        Returns:
+            None
+
+        Raises:
+            None
+        """
         conn = self.rapid_db_connect
         cursor = conn.cursor()
         payload = self.db_credentials
