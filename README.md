@@ -12,8 +12,6 @@ You can install the dependencies using pip:
 
 pip install psycopg2
 
-makefile
-Copy code
 
 ## Usage
 
