@@ -24,12 +24,12 @@ class RapidGet:
         _get_filtered_rapid_data(): Retrieves the data from the database with applied filters.
     """
 
-    def __init__(self, payload, filters, filter_data):
+    def __init__(self, payload, filters, filter_data_payload):
         self.payload = payload
         self.filters = filters
-        self.filter_data = filter_data
+        self.filter_data_payload = filter_data_payload
         self.rapid_db_connect = self._rapid_db_connect
-        if self.filters == False:
+        if not self.filters:
             self._get_rapid_data()
         else:
             self._get_filtered_rapid_data()
@@ -79,6 +79,25 @@ class RapidGet:
             print(json_data, "::json data")
         except Exception as error:
             print(f"Error occured while fetching the data from the database: {error}")
+        finally:
+            cursor.close()
+            conn.close()
+
+    @staticmethod
+    def _filter_data(filter_query: str, cursor):
+        """functionality to filter data based on the user input"""
+        try:
+            cursor.execute(filter_query)
+            rapid_data = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            rapid_data_json = []
+            for row in rapid_data:
+                rapid_data_json.append(dict(zip(columns, row)))
+            json_data = json.dumps(rapid_data_json, indent=4)
+            print(json_data, "::json data")
+
+        except Exception as error:
+            print(f"Failed to filter the data as expected : {error}")
 
     def _get_filtered_rapid_data(self):
         """
@@ -92,21 +111,10 @@ class RapidGet:
         conn = self.rapid_db_connect
         cursor = conn.cursor()
         table_name = self.payload.get("table_name")
-        try:
-            filter_query = f"SELECT * FROM {table_name} WHERE "
-            conditions = []
-            for key, value in self.filter_data.items():
-                conditions.append(f"{key} = '{value}'")
-            filter_query += " AND ".join(conditions)
-            print(filter_query, "::filter query")
-            cursor.execute(filter_query)
-            rapid_data = cursor.fetchall()
-            columns = [column[0] for column in cursor.description]
-            rapid_data_json = []
-            for row in rapid_data:
-                rapid_data_json.append(dict(zip(columns, row)))
-            json_data = json.dumps(rapid_data_json, indent=4)
-            print(json_data, "::json data")
+        if self.filter_data_payload == {}:
+            filter_query = f"SELECT * FROM {table_name}"
 
-        except Exception as error:
-            print(f"Failed to filter the data as expected : {error}")
+        else:
+            filter_query = f"SELECT * FROM {table_name} WHERE {self.filter_data_payload.get('filter','')}"
+        with self.rapid_db_connect as conn, conn.cursor() as cursor:
+            RapidGet._filter_data(filter_query, cursor)
