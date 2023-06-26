@@ -1,5 +1,6 @@
 import requests
-from rapid_db_creation import RapidDB
+
+from .rapid_db_creation import RapidDB
 
 
 class RapidPost:
