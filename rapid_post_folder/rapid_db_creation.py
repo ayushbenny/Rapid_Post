@@ -85,10 +85,7 @@ class RapidDB:
             else "CREATE TABLE TEST (id INTEGER PRIMARY KEY,"
         )
         create_table_query += ", ".join(
-            [
-                f"{column} {datatype['type']}"
-                for column, datatype in zip(payload_keys, payload_values)
-            ],
+            [f"{column} {datatype['type']}" for column, datatype in zip(payload_keys, payload_values)],
         )
         create_table_query += ")"
         return create_table_query
@@ -108,10 +105,18 @@ class RapidDB:
         """
         conn = self.rapid_db_connect
         cursor = conn.cursor()
+        table_name = query.split(" ")[2]
         try:
-            cursor.execute(query)
-            conn.commit()
-            print("Successfully created Table")
+            cursor.execute(
+                f"SELECT EXISTS(SELECT 1 FROM information_schema.tables WHERE table_name = '{table_name.lower()}')",
+            )
+            exists = cursor.fetchone()[0]
+            if exists:
+                print(f"Table '{table_name}' already exists in the database.")
+            else:
+                cursor.execute(query)
+                conn.commit()
+                print("Successfully created Table")
         except Exception as error:
             print("Failed to create Table > ", str(error))
 
