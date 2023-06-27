@@ -98,6 +98,8 @@ class RapidGet:
 
         except Exception as error:
             print(f"Failed to filter the data as expected : {error}")
+        finally:
+            cursor.close()
 
     def _get_filtered_rapid_data(self):
         """
