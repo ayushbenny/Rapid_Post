@@ -5,6 +5,25 @@ import psycopg2
 
 
 class RapidUpdate:
+    """
+    Class for rapidly updating data in a database table.
+
+    Parameters:
+    -----------
+    id : int
+        The ID of the data row to be updated.
+    table_name : str
+        The name of the database table where the update will be performed.
+    payload : dict
+        A dictionary containing the new data to be updated.
+    method : str
+        The type of update operation to be performed (e.g., "UPDATE", "INSERT", "DELETE").
+
+    Usage:
+    ------
+    rapid_update = RapidUpdate({"id":1}, table_name={"table_name":"my_table"}, payload={"name": "John"}, method="PATCH")
+    """
+
     def __init__(self, id, table_name, payload, method):
         self.id = id
         self.payload = payload
@@ -37,7 +56,15 @@ class RapidUpdate:
         return rapid_connect
 
     def _rapid_data_update(self):
-        """functionality to update"""
+        """Updates data in the table using provided payload and ID.
+
+        If the method is `PUT`, all columns must be provided in the payload.
+        Otherwise, only specified columns will be updated.
+        The function executes the update query and prints the updated row in JSON format.
+
+        Raises:
+            Exception: If any error occurs during database operations.
+        """
         conn = self._rapid_db_connect
         cursor = conn.cursor()
 
